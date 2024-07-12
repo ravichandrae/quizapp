@@ -1,0 +1,71 @@
+<!-- src/main/resources/db/changelog/V1__seed_data.xml -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="seedData" author="ravi">
+        <sql>
+            INSERT INTO question (question_id, question_text) VALUES
+            (100, 'Who wrote Ramayana?'),
+            (101, 'Who is the father Lord Rama?'),
+            (102, 'Who is the brother of Vali in Ramayana?'),
+            (103, 'Who is the father of Bhishma?'),
+            (104, 'Who is the gatekeeper of Lanka in Ramayana?'),
+            (105, 'In which garden was Sita held in captivity in Lanka?'),
+            (106, 'Who was the first prime minister of India?'),
+            (107, 'Who was the first president of India?'),
+            (108, 'What is the capital city of India?'),
+            (109, 'Who wrote Indian national anthem?'),
+            (110, 'What is the full name of Mahatma Gandhi?');
+
+            INSERT INTO option (option_id, question_id, option_text, is_correct) VALUES
+            (100, 100, 'Valmiki', 'T'),
+            (101, 100, 'Vyasa', 'F'),
+            (102, 100, 'Kalidasa', 'F'),
+            (103, 100, 'Bhasa', 'F'),
+            (104, 101, 'Dasaratha', 'T'),
+            (105, 101, 'Janaka', 'F'),
+            (106, 101, 'Viswamitra', 'F'),
+            (107, 101, 'Bharata', 'F'),
+            (108, 102, 'Sugriva', 'T'),
+            (109, 102, 'Hanuman', 'F'),
+            (110, 102, 'Angada', 'F'),
+            (111, 102, 'Jambavan', 'F'),
+            (112, 103, 'Santanu', 'T'),
+            (113, 103, 'Bharata', 'F'),
+            (114, 103, 'Kanva', 'F'),
+            (115, 103, 'Dushyanta', 'F'),
+            (116, 104, 'Lankini', 'T'),
+            (117, 104, 'Tataki', 'F'),
+            (118, 104, 'Simhika', 'F'),
+            (119, 104, 'Surasa', 'F'),
+            (120, 105, 'Ashoka Vanam', 'T'),
+            (121, 105, 'Pushpa Vanam', 'F'),
+            (122, 105, 'Badarika Vanam', 'F'),
+            (123, 105, 'Nandana Vanam', 'F'),
+            (124, 106, 'Jawaharlal Nehru', 'T'),
+            (125, 106, 'Babu Rajendra Prasad', 'F'),
+            (126, 106, 'Vallabhai Patel', 'F'),
+            (127, 106, 'Indira Gandhi', 'F'),
+            (128, 107, 'Jawaharlal Nehru', 'F'),
+            (129, 107, 'Babu Rajendra Prasad', 'T'),
+            (130, 107, 'Vallabhai Patel', 'F'),
+            (131, 107, 'Indira Gandhi', 'F'),
+            (132, 108, 'New Delhi', 'T'),
+            (133, 108, 'Mumbai', 'F'),
+            (134, 108, 'Kolkata', 'F'),
+            (135, 108, 'Hyderabad', 'F'),
+            (136, 109, 'Rabindra Nath Tagore', 'T'),
+            (137, 109, 'Bankim Chandra Chatterji', 'F'),
+            (138, 109, 'Mahatma Gandhi', 'F'),
+            (139, 109, 'Sarojini Naidu', 'F'),
+            (140, 110, 'Mohandas Karamchand Gandhi', 'T'),
+            (141, 110, 'Mohandas Kushalchand Gandhi', 'F'),
+            (142, 110, 'Muralidas Karamchand Gandhi', 'F'),
+            (143, 110, 'Motilal Karamchand Gandhi', 'F');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

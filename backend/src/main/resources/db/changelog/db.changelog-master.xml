@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="createQuestionsTable" author="ravi">
+        <createTable tableName="question">
+            <column name="question_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="question_text" type="varchar(500)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="createOptionsTable" author="ravi">
+        <createTable tableName="option">
+            <column name="option_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="option_text" type="varchar(500)"/>
+            <column name="question_id" type="bigint"/>
+            <column name="is_correct" type="boolean"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="addForeignKeyQuestionIdOptionsTable" author="ravi">
+        <addForeignKeyConstraint baseTableName="option" baseColumnNames="question_id"
+                                 referencedTableName="question" referencedColumnNames="question_id"
+                                 constraintName="fk_options_questions"/>
+    </changeSet>
+
+    <changeSet id="createUserTable" author="ravi">
+        <createTable tableName="user">
+            <column name="user_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints unique="true"/>
+            </column>
+
+            <!-- Authentication information -->
+            <column name="auth_providers" type="text"/>
+
+            <!-- Additional identity provider-specific attributes -->
+            <column name="auth_provider_custom_attributes" type="text"/>
+
+            <!-- Timestamps -->
+            <column name="created_at" type="timestamptz">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamptz">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <include file="classpath:/db/changelog/v1__seed_data.xml"/>
+</databaseChangeLog>
