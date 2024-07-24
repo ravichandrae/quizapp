@@ -1,0 +1,218 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: quizapp
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mobile
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar(255)
+
+        - createTable:
+            tableName: questions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: text
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: options
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: text
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_correct
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: question_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_option_question
+                    references: questions(id)
+
+        - createTable:
+            tableName: quizzes
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_quiz_user
+                    references: users(id)
+              - column:
+                  name: is_completed
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: quiz_questions
+            columns:
+              - column:
+                  name: quiz_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_quiz_question_quiz
+                    references: quizzes(id)
+              - column:
+                  name: question_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_quiz_question_question
+                    references: questions(id)
+
+        - createTable:
+            tableName: quiz_results
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: quiz_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_quiz_result_quiz
+                    references: quizzes(id)
+              - column:
+                  name: score
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_questions
+                  type: int
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: quizapp
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: name
+                  value: "John Doe"
+              - column:
+                  name: mobile
+                  value: "1234567890"
+              - column:
+                  name: email
+                  value: "john.doe@example.com"
+
+        - insert:
+            tableName: questions
+            columns:
+              - column:
+                  name: text
+                  value: "What is the capital of France?"
+
+        - insert:
+            tableName: options
+            columns:
+              - column:
+                  name: text
+                  value: "London"
+              - column:
+                  name: is_correct
+                  valueBoolean: false
+              - column:
+                  name: question_id
+                  valueNumeric: 1
+
+        - insert:
+            tableName: options
+            columns:
+              - column:
+                  name: text
+                  value: "Paris"
+              - column:
+                  name: is_correct
+                  valueBoolean: true
+              - column:
+                  name: question_id
+                  valueNumeric: 1
+
+        - insert:
+            tableName: options
+            columns:
+              - column:
+                  name: text
+                  value: "Berlin"
+              - column:
+                  name: is_correct
+                  valueBoolean: false
+              - column:
+                  name: question_id
+                  valueNumeric: 1
+
+        - insert:
+            tableName: options
+            columns:
+              - column:
+                  name: text
+                  value: "Madrid"
+              - column:
+                  name: is_correct
+                  valueBoolean: false
+              - column:
+                  name: question_id
+                  valueNumeric: 1

@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
-import './StartScreen.css'; // We'll create this file next
+import axios from 'axios';
+import './StartScreen.css';
 
 const StartScreen = ({ onStart }) => {
-  const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (name.trim() && mobile.trim()) {
-      onStart({ name, mobile });
+    if (mobile.trim()) {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:8080/api/users/${mobile}`);
+        const userData = response.data;
+        onStart(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        alert('Unable to find user. Please check the mobile number and try again.');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
-      alert('Please enter both name and mobile number');
+      alert('Please enter a mobile number');
     }
   };
 
@@ -19,16 +30,6 @@ const StartScreen = ({ onStart }) => {
       <div className="start-screen-content">
         <h2>Welcome to the Quiz</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
           <div className="form-group">
             <label htmlFor="mobile">Mobile Number:</label>
             <input
@@ -39,7 +40,9 @@ const StartScreen = ({ onStart }) => {
               required
             />
           </div>
-          <button type="submit" className="start-button">Start Quiz</button>
+          <button type="submit" className="start-button" disabled={isLoading}>
+            {isLoading ? 'Loading...' : 'Start Quiz'}
+          </button>
         </form>
       </div>
     </div>

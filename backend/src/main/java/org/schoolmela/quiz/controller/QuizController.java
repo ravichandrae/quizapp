@@ -1,29 +1,54 @@
 package org.schoolmela.quiz.controller;
 
-import org.schoolmela.quiz.dto.QuestionAnswer;
-import org.schoolmela.quiz.dto.QuestionOptions;
-import org.schoolmela.quiz.dto.QuizResult;
-import org.schoolmela.quiz.service.QuestionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.schoolmela.quiz.model.Quiz;
+import org.schoolmela.quiz.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/quiz")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/api/quizzes")
+@Tag(name = "Quiz Management", description = "Operations pertaining to Quiz")
+@CrossOrigin(origins = "http://localhost:3000")
 public class QuizController {
     @Autowired
-    private QuestionService questionService;
+    private QuizService quizService;
 
-    @GetMapping
-    public List<QuestionOptions> generateQuiz(
-            @RequestParam(name = "count", required = false, defaultValue = "5") int count) {
-        return questionService.generateRandomQuestions(count);
+    @Operation(summary = "Create a new quiz", description = "Creates a new quiz in the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully created the quiz"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    @PostMapping
+    public ResponseEntity<Quiz> createQuiz(@RequestParam Long userId, @RequestParam int questionCount) {
+        return ResponseEntity.ok(quizService.createQuiz(userId, questionCount));
     }
 
-    @PostMapping
-    public QuizResult evaluateQuiz(@RequestBody List<QuestionAnswer> questionAnswers) {
-        return questionService.evaluateQuestionAnswers(questionAnswers);
+    @Operation(summary = "Get a quiz by quiz id", description = "Returns a quiz based on it's id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the quiz"),
+            @ApiResponse(responseCode = "404", description = "Quiz not found")
+    })
+    @GetMapping("/{quizId}")
+    public ResponseEntity<Quiz> getQuiz(@PathVariable Long quizId) {
+        return quizService.getQuiz(quizId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Get a list of quizzes by user", description = "Returns a list quizzes for the given user id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the quizzes"),
+            @ApiResponse(responseCode = "404", description = "user not found")
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Quiz>> getUserQuizzes(@PathVariable Long userId) {
+        return ResponseEntity.ok(quizService.getUserQuizzes(userId));
     }
 }

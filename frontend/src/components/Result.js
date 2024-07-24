@@ -9,6 +9,7 @@ const Result = ({ score, totalQuestions, studentInfo }) => {
         <div className="student-info">
           <p><strong>Name:</strong> {studentInfo.name}</p>
           <p><strong>Mobile:</strong> {studentInfo.mobile}</p>
+          <p><strong>Email:</strong> {studentInfo.email}</p>
         </div>
         <div className="score-info">
           <p>Your score:</p>

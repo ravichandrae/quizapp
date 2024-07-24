@@ -8,63 +8,68 @@ import './Quiz.css';
 const QUESTION_TIMEOUT = 15; // 15 seconds per question
 
 const Quiz = () => {
-  const [questions, setQuestions] = useState([]);
+  const [quizData, setQuizData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [quizState, setQuizState] = useState('start');
-  const [studentInfo, setStudentInfo] = useState(null);
-  const [finalScore, setFinalScore] = useState(null);
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIMEOUT);
-
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
+  const [quizResult, setQuizResult] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     let timer;
     if (quizState === 'quiz' && timeLeft > 0) {
       timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     } else if (timeLeft === 0) {
-      handleAnswer('');
+      handleAnswer(null);
     }
     return () => clearTimeout(timer);
   }, [quizState, timeLeft]);
 
-  const fetchQuestions = async () => {
+  const fetchQuiz = async (userId) => {
     try {
-      const response = await axios.get('http://localhost:8080/api/quiz');
-      setQuestions(response.data);
+      const response = await axios.post(`http://localhost:8080/api/quizzes?userId=${userId}&questionCount=1`);
+      setQuizData(response.data);
+      setQuizState('quiz');
+      setTimeLeft(QUESTION_TIMEOUT);
     } catch (error) {
-      console.error('Error fetching questions:', error);
+      console.error('Error fetching quiz:', error);
+      alert('Error fetching quiz. Please try again.');
+      setQuizState('start');
     }
   };
 
-  const handleStartQuiz = (info) => {
-    setStudentInfo(info);
-    setQuizState('quiz');
-    setTimeLeft(QUESTION_TIMEOUT);
+  const handleStartQuiz = (userDetails) => {
+    setUserData(userDetails);
+    fetchQuiz(userDetails.id);
   };
 
-  const handleAnswer = (answer) => {
-    const newAnswer = {
-      question: questions[currentQuestionIndex].question,
-      answer: answer
-    };
-    setAnswers(prevAnswers => [...prevAnswers, newAnswer]);
+  const handleAnswer = (optionId) => {
+    console.log('Answer selected:', optionId);
+    setAnswers(prevAnswers => {
+      const newAnswers = [...prevAnswers, optionId];
+      console.log('Updated answers:', newAnswers);
+      return newAnswers;
+    });
     
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < quizData.questions.length - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setTimeLeft(QUESTION_TIMEOUT);
     } else {
-      submitQuiz([...answers, newAnswer]);
+      console.log('Quiz finished, submitting answers');
+      submitQuiz([...answers, optionId]);
     }
   };
 
   const submitQuiz = async (finalAnswers) => {
+    console.log('Submitting quiz with answers:', finalAnswers);
     try {
-      const response = await axios.post('http://localhost:8080/api/quiz', finalAnswers);
-      setFinalScore(response.data.score);
+      const response = await axios.post(`http://localhost:8080/api/quiz-results/${quizData.id}/submit`, finalAnswers);
+      console.log('Quiz submission response:', response.data);
+      setQuizResult(response.data);
       setQuizState('result');
+      // Force re-render
+      setCurrentQuestionIndex(0);
     } catch (error) {
       console.error('Error submitting quiz:', error);
       alert('There was an error submitting your quiz. Please try again.');
@@ -74,30 +79,30 @@ const Quiz = () => {
   return (
     <div className="quiz-container">
       {quizState === 'start' && <StartScreen onStart={handleStartQuiz} />}
-      {quizState === 'quiz' && questions.length > 0 && (
+      {quizState === 'quiz' && quizData && (
         <div className="quiz-content">
           <div className="progress-bar">
             <div 
               className="progress" 
-              style={{width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`}}
+              style={{width: `${((currentQuestionIndex + 1) / quizData.questions.length) * 100}%`}}
             ></div>
           </div>
           <Question
             key={currentQuestionIndex}
-            questionData={questions[currentQuestionIndex]}
+            questionData={quizData.questions[currentQuestionIndex]}
             onAnswer={handleAnswer}
             timeLeft={timeLeft}
           />
           <div className="question-counter">
-            Question {currentQuestionIndex + 1} of {questions.length}
+            Question {currentQuestionIndex + 1} of {quizData.questions.length}
           </div>
         </div>
       )}
-      {quizState === 'result' && 
+      {quizState === 'result' && quizResult && 
         <Result 
-          score={finalScore} 
-          totalQuestions={questions.length} 
-          studentInfo={studentInfo} 
+          score={quizResult.score}
+          totalQuestions={quizResult.totalQuestions}
+          studentInfo={userData}
         />
       }
     </div>
