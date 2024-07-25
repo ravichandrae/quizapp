@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy the Gradle wrapper and project files
 COPY gradlew .
-COPY gradlew.bat .
 COPY gradle ./gradle
 COPY build.gradle .
 COPY settings.gradle .
@@ -19,7 +18,7 @@ RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 VOLUME /tmp
 
 # Build the application
-RUN ./gradlew build || ./gradlew.bat build
+RUN ./gradlew build
 
 # Run the jar file
 CMD ["java", "-jar", "build/libs/quiz-0.0.1-SNAPSHOT.jar"]
