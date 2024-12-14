@@ -15,6 +15,7 @@ You can run this application locally using the following in two ways after cloni
 2. Intellij automatically identifies the project as a Gradle project and gives options to build it.
 3. You can run the QuizApplication.java to run the backend API from the IDE.
 4. Test by accessing the API http://localhost:8080/api/quiz either from your browser or from any API testing tool like Postman
+5. You can try the API using the swagger docs using the URL `http://localhost:8080/swagger-ui/index.html#/`
 ## Running the Frontend
 1. Make sure you have Node v18 running on your machine
 2. navigate to frontend directory
