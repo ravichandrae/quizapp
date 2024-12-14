@@ -15,7 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/quizzes")
 @Tag(name = "Quiz Management", description = "Operations pertaining to Quiz")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class QuizController {
     @Autowired
     private QuizService quizService;

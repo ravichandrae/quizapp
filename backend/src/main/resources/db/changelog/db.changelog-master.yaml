@@ -27,6 +27,12 @@ databaseChangeLog:
               - column:
                   name: email
                   type: varchar(255)
+              - column:
+                  name: pin
+                  type: varchar(10)
+              - column:
+                  name: school
+                  type: varchar(255)
 
         - createTable:
             tableName: questions
@@ -157,6 +163,9 @@ databaseChangeLog:
               - column:
                   name: email
                   value: "john.doe@example.com"
+              - column:
+                  name: pin
+                  value: "1234"
 
         - insert:
             tableName: questions
@@ -164,6 +173,12 @@ databaseChangeLog:
               - column:
                   name: text
                   value: "What is the capital of France?"
+        - insert:
+            tableName: questions
+            columns:
+              - column:
+                  name: text
+                  value: "The sun is a planet. True or False?"
 
         - insert:
             tableName: options
@@ -213,6 +228,51 @@ databaseChangeLog:
               - column:
                   name: is_correct
                   valueBoolean: false
+              - column:
+                  name: question_id
+                  valueNumeric: 1
+        - insert:
+            tableName: options
+            columns:
+              - column:
+                  name: text
+                  value: "True"
+              - column:
+                  name: is_correct
+                  valueBoolean: false
+              - column:
+                  name: question_id
+                  valueNumeric: 2
+        - insert:
+            tableName: options
+            columns:
+              - column:
+                  name: text
+                  value: "False"
+              - column:
+                  name: is_correct
+                  valueBoolean: true
+              - column:
+                  name: question_id
+                  valueNumeric: 2
+        - insert:
+            tableName: quizzes
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: is_completed
+                  valueBoolean: false
+        - insert:
+            tableName: quiz_questions
+            columns:
+              - column:
+                  name: quiz_id
+                  valueNumeric: 1
               - column:
                   name: question_id
                   valueNumeric: 1

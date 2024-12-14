@@ -37,6 +37,22 @@ public class User {
         this.email = email;
     }
 
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,4 +65,10 @@ public class User {
 
     @Column
     private String email;
+
+    @Column(nullable = false)
+    private String pin;
+
+    @Column
+    private String school;
 }
