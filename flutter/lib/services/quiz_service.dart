@@ -7,6 +7,44 @@ import '../models/quiz_result.dart';
 import 'auth_service.dart';
 
 class QuizService {
+  static Future<Quiz> createSampleQuiz(int userId) async {
+    try {
+      print('Creating sample quiz for user $userId...');
+      final response = await http.post(
+        Uri.parse(ApiConfig.baseUrl + ApiConfig.createSampleQuiz(userId)),
+        headers: {
+          'Authorization': 'Bearer ${AuthService.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Create sample quiz response status: ${response.statusCode}');
+      print('Create sample quiz response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        try {
+          return Quiz.fromJson(json.decode(response.body));
+        } catch (e) {
+          print('Error parsing created quiz: $e');
+          print('Raw response body: ${response.body}');
+          rethrow;
+        }
+      } else {
+        String errorMessage;
+        try {
+          final errorData = json.decode(response.body);
+          errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        } catch (e) {
+          errorMessage = 'Status code: ${response.statusCode}';
+        }
+        throw Exception('Failed to create sample quiz: $errorMessage');
+      }
+    } catch (e) {
+      print('Create sample quiz error: $e');
+      rethrow;
+    }
+  }
+
   static Future<List<Quiz>> getUserQuizzes(int userId) async {
     try {
       print('Fetching quizzes for user $userId...');

@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<User> _profileFuture;
   late Future<List<Quiz>> _quizzesFuture;
   late Future<List<QuizResult>> _resultsFuture;
+  bool _isCreatingQuiz = false;
 
   @override
   void initState() {
@@ -45,6 +46,35 @@ class _HomeScreenState extends State<HomeScreen> {
   void _logout() {
     AuthService.logout();
     Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  Future<void> _createSampleQuiz() async {
+    setState(() => _isCreatingQuiz = true);
+    
+    try {
+      final user = await _profileFuture;
+      await QuizService.createSampleQuiz(user.id!);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sample quiz created successfully!')),
+        );
+        _refresh();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to create sample quiz: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isCreatingQuiz = false);
+      }
+    }
   }
 
   @override
@@ -118,6 +148,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   },
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _isCreatingQuiz ? null : _createSampleQuiz,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: _isCreatingQuiz
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Create Sample Quiz'),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(

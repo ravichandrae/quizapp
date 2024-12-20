@@ -12,4 +12,5 @@ class ApiConfig {
   static String userQuizzes(int userId) => '/quizzes/user/$userId';
   static String submitQuizResult(int quizId) => '/quiz-results/$quizId/submit';
   static String userQuizResults(int userId) => '/quiz-results/user/$userId';
+  static String createSampleQuiz(int userId) => '/quizzes/user/$userId?questionCount=3';
 }
