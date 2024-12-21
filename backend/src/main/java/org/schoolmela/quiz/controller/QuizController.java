@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
 import org.schoolmela.quiz.model.Quiz;
 import org.schoolmela.quiz.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +26,15 @@ public class QuizController {
             @ApiResponse(responseCode = "200", description = "Successfully created the quiz"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
     })
+
     @PostMapping("/user/{userId}")
-    public ResponseEntity<Quiz> createQuiz(@PathVariable Long userId, @RequestParam int questionCount) {
-        return ResponseEntity.ok(quizService.createQuiz(userId, questionCount));
+    public ResponseEntity<Quiz> createQuiz(@PathVariable Long userId, @RequestBody List<Long> questionIds) {
+        return ResponseEntity.ok(quizService.createQuiz(userId, questionIds));
+    }
+
+    @PostMapping("/user/{userId}/sample")
+    public ResponseEntity<Quiz> createSampleQuiz(@PathVariable Long userId, @RequestParam int questionCount) {
+        return ResponseEntity.ok(quizService.createSampleQuiz(userId, questionCount));
     }
 
     @Operation(summary = "Get a quiz by quiz id", description = "Returns a quiz based on it's id")

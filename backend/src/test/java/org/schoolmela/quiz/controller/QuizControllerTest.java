@@ -29,12 +29,12 @@ public class QuizControllerTest {
     private QuizService quizService;
 
     @Test
-    public void testCreateQuiz() throws Exception {
+    public void createSampleQuiz() throws Exception {
         Quiz quiz = new Quiz();
         quiz.setId(1L);
         // Set other properties as needed
 
-        when(quizService.createQuiz(anyLong(), anyInt())).thenReturn(quiz);
+        when(quizService.createSampleQuiz(anyLong(), anyInt())).thenReturn(quiz);
 
         mockMvc.perform(post("/api/quizzes?userId=1&questionCount=5"))
                 .andExpect(status().isOk())

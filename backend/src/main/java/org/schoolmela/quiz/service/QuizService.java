@@ -23,11 +23,26 @@ public class QuizService {
     private UserRepository userRepository;
 
     @Transactional
-    public Quiz createQuiz(Long userId, int questionCount) {
+    public Quiz createSampleQuiz(Long userId, int questionCount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Question> questions = questionRepository.findRandomQuestions(questionCount);
+
+        Quiz quiz = new Quiz();
+        quiz.setUser(user);
+        quiz.setQuestions(questions);
+        quiz.setCompleted(false);
+
+        return quizRepository.save(quiz);
+    }
+
+    @Transactional
+    public Quiz createQuiz(Long userId, List<Long> questionIds) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Question> questions = questionRepository.findAllById(questionIds);
 
         Quiz quiz = new Quiz();
         quiz.setUser(user);
