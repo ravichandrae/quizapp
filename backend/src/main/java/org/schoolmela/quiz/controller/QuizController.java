@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.schoolmela.quiz.dto.QuizDTO;
 import org.schoolmela.quiz.model.Quiz;
 import org.schoolmela.quiz.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class QuizController {
     })
 
     @PostMapping("/user/{userId}")
-    public ResponseEntity<Quiz> createQuiz(@PathVariable Long userId, @RequestBody List<Long> questionIds) {
+    public ResponseEntity<QuizDTO> createQuiz(@PathVariable Long userId, @RequestBody List<Long> questionIds) {
         return ResponseEntity.ok(quizService.createQuiz(userId, questionIds));
     }
 

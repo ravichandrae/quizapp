@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @Tag(name = "User Management", description = "Operations pertaining to users in the Quiz Application")
@@ -84,6 +86,17 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
         }
+    }
+
+    @Operation(summary = "Get All Users", description = "Retrieve a list of all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved user list")
+    })
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        users.forEach(user -> user.setPin(null)); // Remove sensitive data
+        return ResponseEntity.ok(users);
     }
 
     @Operation(summary = "Get User Profile", description = "Retrieve user profile information")

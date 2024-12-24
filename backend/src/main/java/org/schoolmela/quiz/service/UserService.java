@@ -7,6 +7,7 @@ import org.schoolmela.quiz.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,10 @@ public class UserService {
             throw new RuntimeException("User with this mobile number already exists");
         }
         return userRepository.save(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public Optional<User> getUserByMobile(String mobile) {
