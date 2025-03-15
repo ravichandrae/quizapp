@@ -12,6 +12,7 @@ import org.schoolmela.quiz.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,6 +110,10 @@ public class QuizService {
         return quizRepository.findByUserId(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<Quiz> getAllQuizzes() {
+        return new ArrayList<>(quizRepository.findAll());
     }
 
     private QuizDTO convertToDTO(Quiz quiz) {

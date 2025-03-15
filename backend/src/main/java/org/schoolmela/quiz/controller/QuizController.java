@@ -59,4 +59,14 @@ public class QuizController {
     public ResponseEntity<List<Quiz>> getUserQuizzes(@PathVariable Long userId) {
         return ResponseEntity.ok(quizService.getUserQuizzes(userId));
     }
+
+    @Operation(summary = "Get list of all quizzes", description = "Returns a list quizzes for all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the quizzes"),
+            @ApiResponse(responseCode = "404", description = "user not found")
+    })
+    @GetMapping()
+    public ResponseEntity<List<Quiz>> getAllQuizzes() {
+        return ResponseEntity.ok(quizService.getAllQuizzes());
+    }
 }
