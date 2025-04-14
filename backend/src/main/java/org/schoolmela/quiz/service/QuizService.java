@@ -38,7 +38,7 @@ public class QuizService {
         quiz.setQuestions(questions);
         quiz.setCompleted(false);
 
-        return quizRepository.save(quiz);
+        return quiz;
     }
 
     @Transactional

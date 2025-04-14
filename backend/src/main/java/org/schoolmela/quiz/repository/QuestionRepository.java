@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    @Query(value = "SELECT * FROM questions OFFSET floor(random() * (SELECT COUNT(*) FROM questions)) LIMIT :count", nativeQuery = true)
+    @Query(value = "SELECT * FROM questions ORDER BY RAND() LIMIT :count", nativeQuery = true)
     List<Question> findRandomQuestions(int count);
 }

@@ -1,112 +1,205 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Question from './Question';
-import Result from './Result';
-import StartScreen from './StartScreen';
 import './Quiz.css';
 
-const QUESTION_TIMEOUT = 15; // 15 seconds per question
-
 const Quiz = () => {
-  const [quizData, setQuizData] = useState(null);
+  const [quiz, setQuiz] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [quizState, setQuizState] = useState('start');
-  const [timeLeft, setTimeLeft] = useState(QUESTION_TIMEOUT);
-  const [quizResult, setQuizResult] = useState(null);
-  const [userData, setUserData] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [questionCount, setQuestionCount] = useState(3);
+  
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let timer;
-    if (quizState === 'quiz' && timeLeft > 0) {
-      timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-    } else if (timeLeft === 0) {
-      handleAnswer(null);
-    }
-    return () => clearTimeout(timer);
-  }, [quizState, timeLeft]);
+    // Fetch sample quiz for user with ID 1
+    const fetchQuiz = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `http://localhost:8080/api/quizzes/user/1/sample?questionCount=${questionCount}`
+        );
+        setQuiz(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load quiz. Please try again.');
+        setLoading(false);
+      }
+    };
 
-  const fetchQuiz = async (userId) => {
-    try {
-      const response = await axios.post(`http://localhost:8080/api/quizzes?userId=${userId}&questionCount=1`);
-      setQuizData(response.data);
-      setQuizState('quiz');
-      setTimeLeft(QUESTION_TIMEOUT);
-    } catch (error) {
-      console.error('Error fetching quiz:', error);
-      alert('Error fetching quiz. Please try again.');
-      setQuizState('start');
-    }
-  };
+    fetchQuiz();
+  }, [questionCount]);
 
-  const handleStartQuiz = (userDetails) => {
-    setUserData(userDetails);
-    fetchQuiz(userDetails.id);
-  };
-
-  const handleAnswer = (optionId) => {
-    console.log('Answer selected:', optionId);
-    setAnswers(prevAnswers => {
-      const newAnswers = [...prevAnswers, optionId];
-      console.log('Updated answers:', newAnswers);
-      return newAnswers;
-    });
+  // Timer for each question
+  useEffect(() => {
+    if (!quiz || quizCompleted) return;
     
-    if (currentQuestionIndex < quizData.questions.length - 1) {
-      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-      setTimeLeft(QUESTION_TIMEOUT);
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // Time's up for current question
+          handleTimeUp();
+          return 15; // Reset for next question
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [currentQuestionIndex, quiz, quizCompleted]);
+
+  const handleTimeUp = () => {
+    // Move to next question without adding score if time is up
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedOption(null);
+      setTimeLeft(15); // Reset timer
     } else {
-      console.log('Quiz finished, submitting answers');
-      submitQuiz([...answers, optionId]);
+      // Quiz completed
+      finishQuiz();
     }
   };
 
-  const submitQuiz = async (finalAnswers) => {
-    console.log('Submitting quiz with answers:', finalAnswers);
-    try {
-      const response = await axios.post(`http://localhost:8080/api/quiz-results/${quizData.id}/submit`, finalAnswers);
-      console.log('Quiz submission response:', response.data);
-      setQuizResult(response.data);
-      setQuizState('result');
-      // Force re-render
-      setCurrentQuestionIndex(0);
-    } catch (error) {
-      console.error('Error submitting quiz:', error);
-      alert('There was an error submitting your quiz. Please try again.');
+  const handleOptionSelect = (optionId) => {
+    setSelectedOption(optionId);
+    
+    // Check if correct answer
+    const currentQuestion = quiz.questions[currentQuestionIndex];
+    const selectedOpt = currentQuestion.options.find(opt => opt.id === optionId);
+    
+    if (selectedOpt.correct) {
+      setScore(score + 1);
     }
+    
+    // Move to next question after a short delay
+    setTimeout(() => {
+      if (currentQuestionIndex < quiz.questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedOption(null);
+        setTimeLeft(15); // Reset timer
+      } else {
+        // Quiz completed
+        finishQuiz();
+      }
+    }, 1000);
   };
+
+  const finishQuiz = () => {
+    setQuizCompleted(true);
+  };
+
+  const restartQuiz = () => {
+    setCurrentQuestionIndex(0);
+    setSelectedOption(null);
+    setScore(0);
+    setTimeLeft(15);
+    setQuizCompleted(false);
+    setLoading(true);
+    
+    // Fetch a new quiz
+    const fetchQuiz = async () => {
+      try {
+        const response = await axios.post(
+          `http://localhost:8080/api/quizzes/user/1/sample?questionCount=${questionCount}`
+        );
+        setQuiz(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load quiz. Please try again.');
+        setLoading(false);
+      }
+    };
+
+    fetchQuiz();
+  };
+
+  const handleQuestionCountChange = (e) => {
+    setQuestionCount(e.target.value);
+  };
+
+  const getOptionClassName = (option) => {
+    if (selectedOption === null) return "option-btn";
+    if (selectedOption === option.id) {
+      return `option-btn ${option.correct ? "correct" : "incorrect"}`;
+    }
+    if (selectedOption !== null && option.correct) {
+      return "option-btn correct";
+    }
+    return "option-btn";
+  };
+
+  if (loading) return <div className="quiz-container"><p>Loading quiz...</p></div>;
+  if (error) return <div className="quiz-container"><p className="error">{error}</p></div>;
+  if (!quiz) return <div className="quiz-container"><p>No quiz data available.</p></div>;
 
   return (
     <div className="quiz-container">
-      {quizState === 'start' && <StartScreen onStart={handleStartQuiz} />}
-      {quizState === 'quiz' && quizData && (
-        <div className="quiz-content">
-          <div className="progress-bar">
-            <div 
-              className="progress" 
-              style={{width: `${((currentQuestionIndex + 1) / quizData.questions.length) * 100}%`}}
-            ></div>
+      {!quizCompleted ? (
+        <>
+          <div className="quiz-header">
+            <h2>Sample Quiz</h2>
+            <div className="quiz-info">
+              <p>Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
+              <p className={timeLeft <= 5 ? "timer-warning" : "timer"}>
+                Time Left: {timeLeft}s
+              </p>
+              <p>Score: {score}</p>
+            </div>
           </div>
-          <Question
-            key={currentQuestionIndex}
-            questionData={quizData.questions[currentQuestionIndex]}
-            onAnswer={handleAnswer}
-            timeLeft={timeLeft}
-          />
-          <div className="question-counter">
-            Question {currentQuestionIndex + 1} of {quizData.questions.length}
+          
+          <div className="question-container">
+            <h3>{quiz.questions[currentQuestionIndex].text}</h3>
+            <div className="options-container">
+              {quiz.questions[currentQuestionIndex].options.map((option) => (
+                <button
+                  key={option.id}
+                  className={getOptionClassName(option)}
+                  onClick={() => handleOptionSelect(option.id)}
+                  disabled={selectedOption !== null}
+                >
+                  {option.text}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="quiz-results">
+          <h2>Quiz Completed!</h2>
+          <p>Your Score: {score} out of {quiz.questions.length}</p>
+          <p>Percentage: {Math.round((score / quiz.questions.length) * 100)}%</p>
+          
+          <div className="quiz-controls">
+            <div className="question-count-control">
+              <label htmlFor="questionCount">Number of Questions:</label>
+              <select
+                id="questionCount"
+                value={questionCount}
+                onChange={handleQuestionCountChange}
+              >
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            
+            <button className="restart-btn" onClick={restartQuiz}>
+              Take Another Quiz
+            </button>
+            
+            <button className="home-btn" onClick={() => navigate('/profile')}>
+              Back to Profile
+            </button>
           </div>
         </div>
       )}
-      {quizState === 'result' && quizResult && 
-        <Result 
-          score={quizResult.score}
-          totalQuestions={quizResult.totalQuestions}
-          studentInfo={userData}
-        />
-      }
     </div>
   );
 };
 
-export default Quiz;
+export default Quiz; 
