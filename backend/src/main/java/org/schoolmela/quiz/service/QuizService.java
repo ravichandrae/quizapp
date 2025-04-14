@@ -2,7 +2,11 @@ package org.schoolmela.quiz.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.schoolmela.quiz.dto.OptionResponse;
+import org.schoolmela.quiz.dto.QuestionResponse;
 import org.schoolmela.quiz.dto.QuizDTO;
+import org.schoolmela.quiz.dto.QuizResponse;
+import org.schoolmela.quiz.model.Option;
 import org.schoolmela.quiz.model.Question;
 import org.schoolmela.quiz.model.Quiz;
 import org.schoolmela.quiz.model.User;
@@ -53,8 +57,45 @@ public class QuizService {
         return quizRepository.findById(quizId);
     }
 
-    public List<Quiz> getUserQuizzes(Long userId) {
-        return quizRepository.findByUserId(userId);
+    public List<QuizResponse> getUserQuizzes(Long userId) {
+        List<Quiz> quizzes = quizRepository.findByUserId(userId);
+        return convertToQuizResponses(quizzes);
+    }
+
+    private List<QuizResponse> convertToQuizResponses(List<Quiz> quizzes) {
+        List<QuizResponse> quizResponses = new ArrayList<>();
+        for (Quiz quiz: quizzes) {
+            QuizResponse quizResponse = new QuizResponse();
+            quizResponse.setId(quiz.getId());
+            quizResponse.setCompleted(quiz.isCompleted());
+            quizResponse.setUserId(quiz.getUser().getId());
+            quizResponse.setQuestions(convertToQuestionResponses(quiz.getQuestions()));
+            quizResponses.add(quizResponse);
+        }
+        return quizResponses;
+    }
+
+    private List<QuestionResponse> convertToQuestionResponses(List<Question> questions) {
+        List<QuestionResponse> questionResponses = new ArrayList<>();
+        for (Question question: questions) {
+            QuestionResponse questionResponse = new QuestionResponse();
+            questionResponse.setId(question.getId());
+            questionResponse.setText(question.getText());
+            questionResponse.setOptions(convertToOptionResponses(question.getOptions()));
+            questionResponses.add(questionResponse);
+        }
+        return questionResponses;
+    }
+
+    private List<OptionResponse> convertToOptionResponses(List<Option> options) {
+        List<OptionResponse> optionResponses = new ArrayList<>();
+        for (Option option: options) {
+            OptionResponse optionResponse = new OptionResponse();
+            optionResponse.setId(option.getId());
+            optionResponse.setText(option.getText());
+            optionResponses.add(optionResponse);
+        }
+        return optionResponses;
     }
 
     @Transactional

@@ -7,6 +7,7 @@ import Quiz from './components/Quiz';
 import AssignedQuizzes from './components/AssignedQuizzes';
 import AssignedQuiz from './components/AssignedQuiz';
 import PrivateRoute from './components/PrivateRoute';
+import Layout from './components/Layout';
 
 function App() {
   return (
@@ -15,24 +16,34 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          
+          {/* Protected routes with Layout */}
           <Route path="/profile" element={
             <PrivateRoute>
-              <Profile />
+              <Layout>
+                <Profile />
+              </Layout>
             </PrivateRoute>
           } />
           <Route path="/quiz" element={
             <PrivateRoute>
-              <Quiz />
+              <Layout>
+                <Quiz />
+              </Layout>
             </PrivateRoute>
           } />
           <Route path="/assigned-quizzes" element={
             <PrivateRoute>
-              <AssignedQuizzes />
+              <Layout>
+                <AssignedQuizzes />
+              </Layout>
             </PrivateRoute>
           } />
           <Route path="/assigned-quiz/:quizId" element={
             <PrivateRoute>
-              <AssignedQuiz />
+              <Layout>
+                <AssignedQuiz />
+              </Layout>
             </PrivateRoute>
           } />
           <Route path="/" element={<Navigate to="/login" replace />} />

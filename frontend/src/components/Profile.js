@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Profile.css';
 
@@ -7,7 +6,6 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,48 +27,30 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
-
-  const startQuiz = () => {
-    navigate('/quiz');
-  };
-
-  const viewAssignedQuizzes = () => {
-    navigate('/assigned-quizzes');
-  };
-
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loading-spinner">Loading...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="profile-container">
-      <h2>Profile</h2>
+      <h2 className="profile-title">My Profile</h2>
+      
       {userData && (
         <div className="profile-details">
-          <p><strong>Name:</strong> {userData.name}</p>
-          <p><strong>Mobile:</strong> {userData.mobile}</p>
-          <p><strong>Email:</strong> {userData.email}</p>
-          <p><strong>School:</strong> {userData.school || 'Not specified'}</p>
+          <div className="profile-card">
+            <div className="profile-avatar">
+              <div className="avatar-placeholder">
+                {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+            </div>
+            <div className="profile-info">
+              <p><strong>Name:</strong> {userData.name}</p>
+              <p><strong>Mobile:</strong> {userData.mobile}</p>
+              <p><strong>Email:</strong> {userData.email}</p>
+              <p><strong>School:</strong> {userData.school || 'Not specified'}</p>
+            </div>
+          </div>
         </div>
       )}
-      
-      <div className="profile-actions">
-        <button onClick={viewAssignedQuizzes} className="quiz-button">
-          View Assigned Quizzes
-        </button>
-        
-        <button onClick={startQuiz} className="quiz-button">
-          Take a Sample Quiz
-        </button>
-        
-        <button onClick={handleLogout} className="logout-button">
-          Sign Out
-        </button>
-      </div>
     </div>
   );
 };

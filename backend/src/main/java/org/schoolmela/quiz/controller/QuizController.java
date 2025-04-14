@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.schoolmela.quiz.dto.QuizDTO;
+import org.schoolmela.quiz.dto.QuizResponse;
 import org.schoolmela.quiz.model.Quiz;
 import org.schoolmela.quiz.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class QuizController {
             @ApiResponse(responseCode = "404", description = "user not found")
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Quiz>> getUserQuizzes(@PathVariable Long userId) {
+    public ResponseEntity<List<QuizResponse>> getUserQuizzes(@PathVariable Long userId) {
         return ResponseEntity.ok(quizService.getUserQuizzes(userId));
     }
 
