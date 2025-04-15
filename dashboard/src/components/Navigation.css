@@ -1,0 +1,98 @@
+.dashboard-nav {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-left: 4px solid transparent;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-left-color: #3498db;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.7;
+}
+
+.nav-item.active .nav-icon {
+  opacity: 1;
+}
+
+/* Icons using emoji as placeholders - in a real app, you'd use SVG icons */
+.dashboard-icon::before {
+  content: "📊";
+}
+
+.users-icon::before {
+  content: "👥";
+}
+
+.questions-icon::before {
+  content: "❓";
+}
+
+.quizzes-icon::before {
+  content: "📝";
+}
+
+.results-icon::before {
+  content: "📈";
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-nav {
+    width: 100%;
+    height: auto;
+  }
+  
+  .nav-menu {
+    display: flex;
+    overflow-x: auto;
+  }
+  
+  .nav-item {
+    flex-direction: column;
+    padding: 0.75rem;
+    text-align: center;
+    border-left: none;
+    border-bottom: 4px solid transparent;
+  }
+  
+  .nav-item.active {
+    border-left-color: transparent;
+    border-bottom-color: #3498db;
+  }
+  
+  .nav-icon {
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+} 
