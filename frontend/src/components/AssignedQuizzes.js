@@ -34,12 +34,12 @@ const AssignedQuizzes = () => {
     navigate('/profile');
   };
 
-  if (loading) return <div className="quizzes-container"><p>Loading assigned quizzes...</p></div>;
-  if (error) return <div className="quizzes-container"><p className="error">{error}</p></div>;
+  if (loading) return <div className="loading-spinner">Loading assigned quizzes...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="quizzes-container">
-      <h2>Your Assigned Quizzes</h2>
+      <h2 className="assigned-title">Your Assigned Quizzes</h2>
       
       {assignedQuizzes.length === 0 ? (
         <div className="no-quizzes">
@@ -74,7 +74,7 @@ const AssignedQuizzes = () => {
                   className="start-quiz-btn"
                   disabled={quiz.completed}
                 >
-                  {quiz.completed ? 'Completed' : 'Start Quiz'}
+                  {quiz.completed ? 'View Results' : 'Start Quiz'}
                 </button>
               </div>
             </div>

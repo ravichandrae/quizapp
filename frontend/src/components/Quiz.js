@@ -133,16 +133,17 @@ const Quiz = () => {
     return "option-btn";
   };
 
-  if (loading) return <div className="quiz-container"><p>Loading quiz...</p></div>;
-  if (error) return <div className="quiz-container"><p className="error">{error}</p></div>;
+  if (loading) return <div className="loading-spinner">Loading quiz...</div>;
+  if (error) return <div className="error-message">{error}</div>;
   if (!quiz) return <div className="quiz-container"><p>No quiz data available.</p></div>;
 
   return (
     <div className="quiz-container">
+      <h2 className="quiz-title">Sample Quiz</h2>
+      
       {!quizCompleted ? (
         <>
           <div className="quiz-header">
-            <h2>Sample Quiz</h2>
             <div className="quiz-info">
               <p>Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
               <p className={timeLeft <= 5 ? "timer-warning" : "timer"}>
@@ -170,7 +171,7 @@ const Quiz = () => {
         </>
       ) : (
         <div className="quiz-results">
-          <h2>Quiz Completed!</h2>
+          <h3>Quiz Completed!</h3>
           <p>Your Score: {score} out of {quiz.questions.length}</p>
           <p>Percentage: {Math.round((score / quiz.questions.length) * 100)}%</p>
           
@@ -190,10 +191,6 @@ const Quiz = () => {
             
             <button className="restart-btn" onClick={restartQuiz}>
               Take Another Quiz
-            </button>
-            
-            <button className="home-btn" onClick={() => navigate('/profile')}>
-              Back to Profile
             </button>
           </div>
         </div>

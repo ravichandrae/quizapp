@@ -10,9 +10,10 @@ const AssignedQuiz = () => {
   const [error, setError] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [answers, setAnswers] = useState({});
+  const [submissionResult, setSubmissionResult] = useState(null);
   
   const navigate = useNavigate();
 
@@ -60,56 +61,86 @@ const AssignedQuiz = () => {
   }, [currentQuestionIndex, quiz, quizCompleted]);
 
   const handleTimeUp = () => {
-    // Move to next question without adding score if time is up
-    if (currentQuestionIndex < quiz.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedOption(null);
-      setTimeLeft(15); // Reset timer
-    } else {
-      // Quiz completed
-      finishQuiz();
-    }
+    // Record -1 for the timed-out question
+    setAnswers(prev => {
+      const updatedAnswers = {
+        ...prev,
+        [currentQuestionIndex]: -1
+      };
+      
+      // If this is the last question, finish the quiz after updating answers
+      if (currentQuestionIndex >= quiz.questions.length - 1) {
+        setTimeout(() => finishQuiz(updatedAnswers), 0);
+      } else {
+        // Move to the next question
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedOption(null);
+        setTimeLeft(15); // Reset timer
+      }
+      
+      return updatedAnswers;
+    });
   };
 
   const handleOptionSelect = (optionId) => {
     setSelectedOption(optionId);
     
-    // Check if correct answer
-    const currentQuestion = quiz.questions[currentQuestionIndex];
-    const selectedOpt = currentQuestion.options.find(opt => opt.id === optionId);
-    
-    if (selectedOpt.correct) {
-      setScore(score + 1);
-    }
-    
-    // Move to next question after a short delay
-    setTimeout(() => {
-      if (currentQuestionIndex < quiz.questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-        setSelectedOption(null);
-        setTimeLeft(15); // Reset timer
-      } else {
-        // Quiz completed
-        finishQuiz();
-      }
-    }, 1000);
+    // Store the answer for current question
+    setAnswers(prev => {
+      const updatedAnswers = {
+        ...prev,
+        [currentQuestionIndex]: optionId
+      };
+      
+      // Move to next question after a short delay
+      setTimeout(() => {
+        if (currentQuestionIndex < quiz.questions.length - 1) {
+          setCurrentQuestionIndex(currentQuestionIndex + 1);
+          setSelectedOption(null);
+          setTimeLeft(15); // Reset timer
+        } else {
+          // If this is the last question, finish the quiz after updating answers
+          finishQuiz(updatedAnswers);
+        }
+      }, 1000);
+      
+      return updatedAnswers;
+    });
   };
 
-  const finishQuiz = () => {
+  const finishQuiz = async (currentAnswers) => {
     setQuizCompleted(true);
     
-    // Here you would typically send a POST request to update the quiz status to completed
-    // For example:
-    // axios.post(`http://localhost:8080/api/quizzes/${quizId}/complete`, { score });
+    try {
+      // Use the most recent answers that were passed in, or fall back to state
+      const answersToSubmit = currentAnswers || answers;
+      
+      // Create an array of answers in question order
+      const answerArray = [];
+      
+      // Make sure all questions have an answer (use -1 for unanswered)
+      for (let i = 0; i < quiz.questions.length; i++) {
+        const answer = answersToSubmit[i];
+        answerArray.push(answer !== undefined ? answer : -1);
+      }
+      
+      console.log("Submitting answers:", answerArray);
+      
+      // Submit answers to the evaluation API
+      const response = await axios.post(
+        `http://localhost:8080/api/quiz-results/${quizId}/submit`,
+        answerArray
+      );
+      setSubmissionResult(response.data);
+    } catch (err) {
+      setError('Failed to submit quiz. Please try again.');
+    }
   };
 
   const getOptionClassName = (option) => {
     if (selectedOption === null) return "option-btn";
     if (selectedOption === option.id) {
-      return `option-btn ${option.correct ? "correct" : "incorrect"}`;
-    }
-    if (selectedOption !== null && option.correct) {
-      return "option-btn correct";
+      return "option-btn selected";
     }
     return "option-btn";
   };
@@ -140,7 +171,6 @@ const AssignedQuiz = () => {
               <p className={timeLeft <= 5 ? "timer-warning" : "timer"}>
                 Time Left: {timeLeft}s
               </p>
-              <p>Score: {score}</p>
             </div>
           </div>
           
@@ -163,8 +193,14 @@ const AssignedQuiz = () => {
       ) : (
         <div className="quiz-results">
           <h2>Quiz Completed!</h2>
-          <p>Your Score: {score} out of {quiz.questions.length}</p>
-          <p>Percentage: {Math.round((score / quiz.questions.length) * 100)}%</p>
+          {submissionResult ? (
+            <>
+              <p>Your Score: {submissionResult.score} out of {submissionResult.totalQuestions}</p>
+              <p>Percentage: {Math.round((submissionResult.score / submissionResult.totalQuestions) * 100)}%</p>
+            </>
+          ) : (
+            <p>Submitting your answers...</p>
+          )}
           
           <div className="quiz-controls">
             <button 

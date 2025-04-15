@@ -1,6 +1,7 @@
 package org.schoolmela.quiz.controller;
 
 import org.junit.jupiter.api.Test;
+import org.schoolmela.quiz.dto.QuizResponse;
 import org.schoolmela.quiz.model.Quiz;
 import org.schoolmela.quiz.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,12 @@ public class QuizControllerTest {
         Quiz quiz2 = new Quiz();
         quiz2.setId(2L);
 
-        when(quizService.getUserQuizzes(1L)).thenReturn(Arrays.asList(quiz1, quiz2));
+        QuizResponse quizResponse1 = new QuizResponse();
+        quizResponse1.setId(1L);
+        QuizResponse quizResponse2 = new QuizResponse();
+        quizResponse1.setId(2L);;
+
+        when(quizService.getUserQuizzes(1L)).thenReturn(Arrays.asList(quizResponse1, quizResponse2));
 
         mockMvc.perform(get("/api/quizzes/user/1"))
                 .andExpect(status().isOk())
