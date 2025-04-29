@@ -49,6 +49,49 @@ databaseChangeLog:
                   type: varchar(1000)
                   constraints:
                     nullable: false
+              - column:
+                  name: difficulty
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+                  defaultValue: "medium"
+                  remarks: "Difficulty level of the question: easy, medium, or hard"
+
+        - createTable:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                  remarks: "Tag name like math, science, history, etc."
+        - createTable:
+            tableName: question_tags
+            columns:
+              - column:
+                  name: question_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_question_tag_question
+                    references: questions(id)
+              - column:
+                  name: tag_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_question_tag_tag
+                    references: tags(id)
+            remarks: "Many-to-many relationship between questions and tags"
 
         - createTable:
             tableName: options
