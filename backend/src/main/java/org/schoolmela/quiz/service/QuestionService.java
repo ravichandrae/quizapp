@@ -4,8 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.schoolmela.quiz.dto.OptionDTO;
 import org.schoolmela.quiz.dto.QuestionDTO;
+import org.schoolmela.quiz.dto.TagDTO;
 import org.schoolmela.quiz.model.Option;
 import org.schoolmela.quiz.model.Question;
+import org.schoolmela.quiz.model.Tag;
 import org.schoolmela.quiz.repository.OptionRepository;
 import org.schoolmela.quiz.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,8 +93,12 @@ public class QuestionService {
         QuestionDTO dto = new QuestionDTO();
         dto.setId(question.getId());
         dto.setText(question.getText());
+        dto.setDifficulty(question.getDifficulty());
         dto.setOptions(question.getOptions().stream()
                 .map(this::convertToOptionDTO)
+                .collect(Collectors.toList()));
+        dto.setTags(question.getTags().stream()
+                .map(this::convertToTagDTO)
                 .collect(Collectors.toList()));
         return dto;
     }
@@ -102,6 +108,13 @@ public class QuestionService {
         dto.setId(option.getId());
         dto.setText(option.getText());
         dto.setCorrect(option.isCorrect());
+        return dto;
+    }
+
+    private TagDTO convertToTagDTO(Tag tag) {
+        TagDTO dto = new TagDTO();
+        dto.setId(tag.getId());
+        dto.setName(tag.getName());
         return dto;
     }
 }

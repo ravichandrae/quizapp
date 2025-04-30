@@ -406,3 +406,66 @@ databaseChangeLog:
               - column:
                   name: question_id
                   valueNumeric: 4
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: "science"
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: "math"
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: name
+                  value: "mythology"
+        - insert:
+            tableName: tags
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 4
+              - column:
+                  name: name
+                  value: "geography"
+        - insert:
+            tableName: question_tags
+            columns:
+              - column:
+                  name: question_id
+                  valueNumeric: 1
+              - column:
+                  name: tag_id
+                  valueNumeric: 4
+        - insert:
+            tableName: question_tags
+            columns:
+              - column:
+                  name: question_id
+                  valueNumeric: 3
+              - column:
+                  name: tag_id
+                  valueNumeric: 3
+        - insert:
+            tableName: question_tags
+            columns:
+              - column:
+                  name: question_id
+                  valueNumeric: 4
+              - column:
+                  name: tag_id
+                  valueNumeric: 2

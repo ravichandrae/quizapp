@@ -30,4 +30,24 @@ public class QuestionResponse {
     private Long id;
     private String text;
     private List<OptionResponse> options;
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public List<TagDTO> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDTO> tags) {
+        this.tags = tags;
+    }
+
+    private String difficulty;
+
+    private List<TagDTO> tags;
 }
